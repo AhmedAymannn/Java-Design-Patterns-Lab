@@ -22,15 +22,64 @@ A comprehensive collection of software design patterns implemented in Java with 
 - **Type-Safe Events:** Using enum for states ensures compile-time safety and prevents invalid event types
 - **Clean Separation:** Clear separation between subject logic and observer behavior
 
-**Real-World Use Case:** YouTube notification system where subscribers get notified about new video uploads or live streams. The channel (subject) maintains a list of subscribers (observers) and notifies them when events occur.
+### Observer Pattern UML
+```
+┌─────────────────┐           ┌──────────────────┐
+│    <<interface>>│           │   <<interface>>  │
+│    Observer     │           │    Subject      │
+├─────────────────┤           ├──────────────────┤
+│ +update(state)  │           │ +subscribe(obs)  │
+└─────────┬───────┘           │ +unsubscribe(obs)│
+          │                   │ +notifyObservers│
+          │                   └─────────┬────────┘
+          │                            │
+          ▼                            ▼
+┌─────────────────┐           ┌──────────────────┐
+│   Subscriber    │           │ YoutubeChannel   │
+├─────────────────┤           ├──────────────────┤
+│ -name: String   │           │ -subscribers: List│
+│ -date: String   │           │ -state: State    │
+│ +update(state)  │           │ -name: String    │
+│ +getName()      │           │ +subscribe(obs)  │
+│ +setName()      │           │ +unsubscribe(obs)│
+└─────────────────┘           │ +notifyObservers│
+                              │ +uploadVideo()   │
+                              │ +startLive()     │
+                              └─────────┬────────┘
+                                        │
+                                        ▼
+                              ┌─────────────────┐
+                              │ <<enumeration>> │
+                              │      State      │
+                              ├─────────────────┤
+                              │ New_video_upld  │
+                              │ Live_Started    │
+                              └─────────────────┘
+```
 
-**Key Methods:**
-- `subscribe(Observer observer)`: Add a new subscriber to the channel
-- `unsubscribe(Observer observer)`: Remove a subscriber from notifications
-- `notifyObservers()`: Notify all current subscribers about state changes
-- `uploadVideo()`: Trigger new video upload notification
-- `startLive()`: Trigger live stream start notification
-- `update(State state)`: Observer method to handle incoming notifications
+### Observer Pattern Flow
+```
+┌─────────┐    subscribe()     ┌─────────────┐    add subscriber    ┌─────────────┐
+│ Main    │────────────────────►│YoutubeChannel│─────────────────────►│ Subscribers │
+└─────────┘                    └─────────────┘                      │  List       │
+        │                              │                            └─────────────┘
+        │                              │
+        ▼                              ▼
+┌─────────┐    uploadVideo()    ┌─────────────┐    notifyObservers()    ┌─────────────┐
+│ Main    │────────────────────►│YoutubeChannel│───────────────────────►│ Subscribers │
+└─────────┘                    └─────────────┘                        └─────────────┘
+        │                              │                                        │
+        ▼                              ▼                                        ▼
+┌─────────┐    unsubscribe()    ┌─────────────┐    remove subscriber   ┌─────────────┐
+│ Main    │────────────────────►│YoutubeChannel│─────────────────────►│ Subscribers │
+└─────────┘                    └─────────────┘                      │  List       │
+                                      │                            └─────────────┘
+                                      ▼
+                              ┌─────────────┐    update(state)    ┌─────────────┐
+                              │ State = New │◄─────────────────────│ Subscriber  │
+                              │ Video       │                      │ Notification │
+                              └─────────────┘                      └─────────────┘
+```
 
 ### Strategy Pattern
 **Location:** `src/strategyPattern/`
@@ -51,16 +100,52 @@ A comprehensive collection of software design patterns implemented in Java with 
 - **Runtime Flexibility:** Strategies can be selected at runtime based on user preferences
 - **Extensibility:** New payment methods can be added without modifying existing code
 
-**Real-World Use Case:** E-commerce payment processing system where customers can choose from multiple payment options. The system processes payments differently based on the selected method while maintaining a consistent interface.
+### Strategy Pattern UML
+```
+┌─────────────────┐           ┌──────────────────┐
+│ <<interface>>   │           │ PaymentService   │
+│ PaymentStrategy │◄──────────┤                  │
+├─────────────────┤           ├──────────────────┤
+│ +collectDetails│           │ +checkOut(amount,│
+│ +pay(amount)   │           │   strategy)      │
+└─────────┬───────┘           └──────────────────┘
+          ▲
+          │
+          │
+┌─────────┴───────┬─────────────┬─────────────────┐
+│                 │             │                 │
+▼                 ▼             ▼                 ▼
+┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+│PaymentByCC  │ │PaymentWith  │ │PaymentByCash│ │  Main       │
+├─────────────┤ │Paypal       │ ├─────────────┤ ├─────────────┤
+│+collectDet  │ │+collectDet  │ │+collectDet  │ │+main()      │
+│+pay(amount) │ │+pay(amount) │ │+pay(amount) │ │             │
+└─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘
 
-**Key Methods:**
-- `collectPaymentDetails()`: Gather payment-specific information from user
-- `pay(double amount)`: Execute the payment transaction
-- `checkOut(double amount, PaymentStrategy strategy)`: Process payment using selected strategy
-- `createStrategy(PaymentType type)`: Factory method to create appropriate strategy
+┌─────────────────┐           ┌─────────────────┐
+│PaymentFactory   │◄──────────│ <<enumeration>> │
+│                 │           │  PaymentType    │
+├─────────────────┤           ├─────────────────┤
+│+createStrategy  │           │ PAYPAL          │
+│  (type)         │           │ CREDIT_CARD     │
+└─────────────────┘           │ CASH            │
+                              └─────────────────┘
 
-**Pattern Benefits:**
-- **Open/Closed Principle:** Open for extension (new strategies), closed for modification
-- **Single Responsibility:** Each strategy handles one specific payment method
-- **Dependency Inversion:** High-level modules depend on abstractions, not concrete implementations
-- **Runtime Flexibility:** Algorithms can be swapped without changing client code
+Flow:
+Main → PaymentFactory → PaymentStrategy
+Main → PaymentService → PaymentStrategy
+PaymentFactory → PaymentType
+```
+
+### Strategy Pattern Flow
+```
+┌─────────┐    select payment    ┌─────────────┐    create strategy    ┌─────────────┐
+│ Main    │─────────────────────►│PaymentFactory│◄─────────────────────│PaymentType  │
+└─────────┘                    └─────────────┘                      └─────────────┘
+        │                                │
+        ▼                                ▼
+┌─────────────┐    checkout()    ┌─────────────┐    pay(amount)    ┌─────────────┐
+│PaymentService│─────────────────►│PaymentStrategy│──────────────────►│Transaction  │
+└─────────────┘                  └─────────────┘                  └─────────────┘
+```
+
