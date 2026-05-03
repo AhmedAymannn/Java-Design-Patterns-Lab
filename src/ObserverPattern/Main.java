@@ -34,6 +34,6 @@ public class Main {
             
             System.out.println("\n=== Channel 1 Uploads Another Video ===");
             channel_1.uploadVideo();
-            
+
         }
 }
