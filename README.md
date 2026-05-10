@@ -131,10 +131,6 @@ A comprehensive collection of software design patterns implemented in Java with 
 └─────────────────┘           │ CASH            │
                               └─────────────────┘
 
-Flow:
-Main → PaymentFactory → PaymentStrategy
-Main → PaymentService → PaymentStrategy
-PaymentFactory → PaymentType
 ```
 
 ### Strategy Pattern Flow
