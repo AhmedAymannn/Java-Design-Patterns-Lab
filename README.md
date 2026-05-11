@@ -7,7 +7,7 @@ A comprehensive collection of software design patterns implemented in Java with 
 ### Observer Pattern
 **Location:** `src/ObserverPattern/`
 
-**Concept:** The Observer pattern defines a one-to-many dependency between objects, where when one object (the subject) changes state, all its dependents (observers) are automatically notified and updated
+**Concept:** The Observer pattern defines a one-to-many =
 
 **Key Components:**
 - `Observer` Interface: Defines the contract for objects that want to receive notifications
